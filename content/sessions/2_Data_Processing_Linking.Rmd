@@ -32,6 +32,8 @@ xaringanExtra::use_extra_styles(
   hover_code_line = TRUE,         #<<
   mute_unhighlighted_code = FALSE  #<<
 )
+
+mapview::mapviewOptions(fgb = FALSE)
 ```
 
 ---
@@ -250,7 +252,7 @@ plot(hospitals_cologne["STADTBE"])
 ## Is the CRS correctly assigned? Plot them with `mapview::mapview()`!
 
 .pull-left[
-```{r corona-mapview, fig.align='center', eval = FALSE, out.height="50%"}
+```{r corona-mapview, eval = FALSE}
 mapview::mapview(
   corona_cologne["anzhl_g"]
 )
@@ -258,7 +260,7 @@ mapview::mapview(
 ]
 
 .pull-right[
-```{r corona-mapview-exec, fig.align='center', echo = FALSE, eval = FALSE, out.height="50%"}
+```{r corona-mapview-exec, fig.align='center', echo = FALSE, eval = TRUE, out.height="50%"}
 mapview::mapview(
   corona_cologne["anzhl_g"]
 )
@@ -270,7 +272,7 @@ mapview::mapview(
 ## ...and the hospitals
 
 .pull-left[
-```{r hospitals-mapview, fig.align='center', eval = FALSE, out.height="50%"}
+```{r hospitals-mapview, eval = FALSE}
 mapview::mapview(
   hospitals_cologne["STADTBE"]
 )
@@ -295,7 +297,7 @@ mapview::mapview(
 corona_cologne <-
   corona_cologne %>% 
   dplyr::mutate(
-    incidence = (anzhl_g / einwhnr)
+    incidence = (anzhl_g / einwhnr) * 100
   )
 ```
 ]
@@ -437,7 +439,6 @@ knitr::include_graphics(normalizePath("./content/img/geometric_confirmation.png"
 https://github.com/rstudio/cheatsheets/blob/master/sf.pdf
 ]
 ]
-
 ]
 
 ---
@@ -620,12 +621,21 @@ class: middle
 knitr::include_graphics(normalizePath("./content/img/r_gis_meme.jpg"))
 ```
 
+---
+
+class: middle
+## Exercise 2: Geospatial Data Wrangling
+
+[Exercise](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/exercises/2_Geospatial_Data_Wrangling.html)
+
+[Solution](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/solutions/2_Geospatial_Data_Wrangling.html)
+
 
 ---
 
 layout: false
 class: center
-background-image: url(../../assets/img/the_end.png)
+background-image: url(../assets/img/the_end.png)
 background-size: cover
 
 .left-column[

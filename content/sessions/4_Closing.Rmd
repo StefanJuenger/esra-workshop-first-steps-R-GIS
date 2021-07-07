@@ -129,7 +129,7 @@ class: middle
 
 layout: false
 class: center
-background-image: url(../../assets/img/the_end.png)
+background-image: url(../assets/img/the_end.png)
 background-size: cover
 
 .left-column[

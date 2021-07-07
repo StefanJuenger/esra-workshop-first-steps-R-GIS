@@ -428,17 +428,17 @@ More details: https://r4ds.had.co.nz/pipes.html
 ---
 
 class: middle
-## Exercise 1: R Warm up
+## Exercise 1: R Warm-Up
 
-[Exercise](XXX)
+[Exercise](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/exercises/1_R_Warm_Up.html)
 
-[Solution](XXX)
+[Solution](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/solutions/1_R_Warm_Up.html)
 
 ---
 
 layout: false
 class: center
-background-image: url(../../assets/img/the_end.png)
+background-image: url(../assets/img/the_end.png)
 background-size: cover
 
 .left-column[

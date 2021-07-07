@@ -32,6 +32,10 @@ xaringanExtra::use_extra_styles(
   hover_code_line = TRUE,         #<<
   mute_unhighlighted_code = FALSE  #<<
 )
+
+mapview::mapviewOptions(fgb = FALSE)
+
+tmap::tmap_mode("plot")
 ```
 
 
@@ -528,12 +532,25 @@ tmaptools::read_osm(
 
 ## Getting interactive (as an alternative to `mapview::mapview()`)!
 
+.pull-left[
 ```{r interactive-map, eval = FALSE}
 tmap_mode("view")
 
 tm_shape(corona_cologne) +
   tm_borders(col = "red")
 ```
+]
+
+.pull-right[
+```{r interactive-map-exec, echo = FALSE, eval = TRUE, out.height="50%", fig.align='center'}
+tmap_mode("view")
+
+tm_shape(corona_cologne) +
+  tm_borders(col = "red")
+
+tmap_mode("plot")
+```
+]
 
 ---
 
@@ -598,12 +615,20 @@ If you want to dive deeper into mapping with `tmap` check out:
 And if you want to get some inspiration, keep an eye out for the `#30DayMapChallenge` on Twitter.
 Repository of Last Year's Challenge [here](https://github.com/tjukanovt/30DayMapChallenge).
 
+---
+
+class: middle
+## Exercise 3: Build Your Own Map
+
+[Exercise](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/exercises/3_Build_Your_Own_Map.html)
+
+[Solution](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/solutions/3_Build_Your_Own_Map.html)
 
 ---
 
 layout: false
 class: center
-background-image: url(../../assets/img/the_end.png)
+background-image: url(../assets/img/the_end.png)
 background-size: cover
 
 .left-column[

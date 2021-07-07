@@ -1,5 +1,5 @@
 ---
-title: 'Exercise 1: R Warm Up'
+title: 'Exercise 1: R Warm-Up'
 author: 'Stefan Jünger'
 date: 'First Steps on Using R as a GIS'
 ---
