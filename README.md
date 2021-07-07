@@ -27,7 +27,7 @@ This course will teach the first steps of exploiting R and applying its geospati
 [4 Closing](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/slides/4_Closing.html)
 
 ## Exercises
-[1 R Warm Up](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/exercises/1_R_Warm_Up.html)
+[1 R Warm-Up](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/exercises/1_R_Warm_Up.html)
 
 [2 Geospatial Data Wrangling](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/exercises/2_Geospatial_Data_Wrangling.html)
 
@@ -35,7 +35,7 @@ This course will teach the first steps of exploiting R and applying its geospati
 
 
 ## Solutions
-[1 R Warm Up](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/solutions/1_R_Warm_Up.html)
+[1 R Warm-Up](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/solutions/1_R_Warm_Up.html)
 
 [2 Geospatial Data Wrangling](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/solutions/2_Geospatial_Data_Wrangling.html)
 
