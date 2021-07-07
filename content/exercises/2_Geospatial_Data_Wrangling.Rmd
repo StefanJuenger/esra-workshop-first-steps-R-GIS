@@ -1,0 +1,222 @@
+---
+title: 'Exercise 2: Geospatial Data Wrangling'
+author: 'Stefan Jünger'
+date: 'First Steps on Using R as a GIS'
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, include=FALSE}
+# custom boxes
+knitr::opts_template$set(
+  clues = list(box.title = "Clues",
+               box.body = list(fill = "#fff9dc", colour = "black"),
+               box.header = list(fill = "#ffec8b", colour = "black"),
+               box.icon = "fa-search",
+               box.collapse = TRUE)
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy()
+```
+
+```{r hidden-stuff, echo = FALSE, include = FALSE}
+library(dplyr)
+corona_cologne <-
+  sf::read_sf(
+    "./data/corona_cologne.shp"
+  ) %>% 
+  sf::st_transform(3035)
+
+immigrants_cologne <-
+  stars::read_stars("./data/immigrants_cologne.tif")
+
+inhabitants_cologne <-
+  stars::read_stars("./data/inhabitants_cologne.tif")
+```
+
+
+```{block, box.title = "1", box.body = list(fill = "white"), box.icon = "fa-star"}
+Import the `corona_cologne` dataset into your `R` session.
+```
+
+```{block, opts.label = "clues"}
+There are several `corona_cologne` files in the `../data/` folder, you would only need the one with the `.shp` extension.
+```
+
+```{r first.exercise, solution = TRUE}
+corona_cologne <-
+  sf::read_sf(
+    "./data/corona_cologne.shp"
+  )
+```
+
+
+
+```{block, box.title = "2", box.body = list(fill = "white"), box.icon = "fa-star"}
+Use the same command as before, but instead of defining the path to the file location plug in the following string:
+
+`"https://geoportal.stadt-koeln.de/arcgis/rest/services/Politik_und_Verwaltung/covid_stadtteile/MapServer/1/query?where=id+is+not+null&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"`
+
+Have a look at the results. What do you think has happened?
+```
+
+```{block, opts.label = "clues"}
+If you don't like long strings occupying a lot of horizontal screen space, consider cutting it in pieces. I prefer using the `paste()`/`paste0()` function or functions from additional packages such as `glue::glue()` from the [`glue` package](https://cran.r-project.org/web/packages/glue/index.html).
+```
+
+```{r second.exercise, solution = TRUE}
+library(dplyr)
+
+corona_cologne <- 
+  glue::glue(
+    "https://geoportal.stadt-koeln.de/arcgis/rest/services/\\
+    Politik_und_Verwaltung/covid_stadtteile/MapServer/1/query?\\
+    where=id+is+not+null&text=&objectIds=&time=&geometry=&\\
+    geometryType=esriGeometryEnvelope&inSR=&spatialRel=\\
+    esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=\\
+    &outFields=*&returnGeometry=true&returnTrueCurves=false&\\
+    maxAllowableOffset=&geometryPrecision=&outSR=4326&havingClause=\\
+    &returnIdsOnly=false&returnCountOnly=false&orderByFields=\\
+    &groupByFieldsForStatistics=&outStatistics=&returnZ=false\\
+    &returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false\\
+    &resultOffset=&resultRecordCount=&returnExtentOnly=false\\
+    &datumTransformation=&parameterValues=&rangeValues=\\
+    &quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+  ) %>% 
+  sf::st_read()
+
+# This exercise shows the beauty of the `sf::st_read` function. It not only
+# detects several different geospatial data formats; it also can download data
+# directly from the internet (in this case a .geojson data file). Downloading 
+# data directly is something that comes quite handy in the geospatial data world 
+# as a lot of data are distributed in the form of download links or even APIs.
+```
+
+
+
+```{block, box.title = "3", box.body = list(fill = "white"), box.icon = "fa-star"}
+Transform the CRS of the dataset to `EPSG:3035` using the `sf::st_transform()` function.
+```
+
+```{block, opts.label = "clues"}
+You only need the four digit number for defining the CRS.
+```
+
+```{r third.exercise, solution = TRUE}
+corona_cologne <-
+  corona_cologne %>% 
+  sf::st_transform(3035) 
+```
+
+```{block, box.title = "4", box.body = list(fill = "white"), box.icon = "fa-star"}
+Load both the `immigrants_cologne` and the `inhabitants_cologne` raster datasets in your `R` session.
+```
+
+```{block, opts.label = "clues"}
+You would need the `stars::read_stars()` function.
+```
+
+```{r fourth.exercise, solution = TRUE}
+immigrants_cologne <-
+  stars::read_stars("./data/immigrants_cologne.tif")
+
+inhabitants_cologne <-
+  stars::read_stars("./data/inhabitants_cologne.tif")
+```
+
+```{block, box.title = "5", box.body = list(fill = "white"), box.icon = "fa-star"}
+Aggregate the number of immigrants in each district using `sum` as function. Does it work?
+```
+
+```{block, opts.label = "clues"}
+It's the same function as on slide XXX.
+```
+
+```{r fifth.exercise, solution = TRUE, error = TRUE}
+immigrants_count <-
+  aggregate(
+    x = immigrants_cologne,
+    by = corona_cologne,
+    FUN = sum,
+    na.rm = TRUE
+  )
+
+# It does not work as R is complaining about non-matching CRS.
+```
+
+Let's see what is happening here by comparing the exact CRS strings:
+
+```{r compare-crs, include = TRUE}
+sf::st_crs(corona_cologne)
+sf::st_crs(immigrants_cologne)
+```
+
+Indeed, they are a bit different. We should change that.
+
+```{block, box.title = "6", box.body = list(fill = "white"), box.icon = "fa-star"}
+Transform the raster data (again) to `EPSG:3035`.
+```
+
+```{block, opts.label = "clues"}
+`stars` and `sf` objects talk fluently to each other. You could either use `sf::st_transform` or `stars::st_transform_proj()` for this task. Try it out!
+```
+
+```{r sixth.exercise, solution = TRUE}
+immigrants_cologne <-
+  immigrants_cologne %>% 
+  stars::st_transform_proj(3035)
+
+inhabitants_cologne <-
+  inhabitants_cologne %>% 
+  stars::st_transform_proj(3035)
+```
+
+```{block, box.title = "7", box.body = list(fill = "white"), box.icon = "fa-star"}
+Aggregate the number of immigrants and inhabitants in each district using `sum` as function. Does it work now?
+```
+
+```{block, opts.label = "clues"}
+It's the same function as on slide XXX.
+```
+
+```{r seventh.exercise, solution = TRUE}
+immigrants_count <-
+  aggregate(
+    x = immigrants_cologne,
+    by = corona_cologne,
+    FUN = sum,
+    na.rm = TRUE
+  )
+
+inhabitants_count <-
+  aggregate(
+    x = inhabitants_cologne,
+    by = corona_cologne,
+    FUN = sum,
+    na.rm = TRUE
+  )
+```
+
+```{block, box.title = "8", box.body = list(fill = "white"), box.icon = "fa-star"}
+Create an immigrant share variable from the two aggregated layers and add them to the `corona_cologne` dataset. Plot it if you will.
+```
+
+```{block, opts.label = "clues"}
+You can either do it on-the-fly using `dplyr::mutate()` as on the slides (XXX), or create first a new object and then add it using `base-R` (`corona_cologne$immigrant_share <- ...`). You could even combine the approaches.
+
+Either way, what might be a bit cumbersome is that you have to extract the first list element in each of the raster layers (e.g., `immigrants_count[[1]]`)
+```
+
+```{r eigth.exercise, solution = TRUE}
+corona_cologne <-
+  corona_cologne %>% 
+  dplyr::mutate(
+    immigrant_share = immigrants_count[[1]] * 100 / inhabitants_count[[1]]
+  )
+
+plot(corona_cologne["immigrant_share"])
+```
+
+
+
+

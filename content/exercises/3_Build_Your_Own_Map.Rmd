@@ -1,0 +1,186 @@
+---
+title: 'Excercise 3: Build your own map'
+author: 'Stefan Jünger'
+date: 'First Steps on Using R as a GIS'
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, include=FALSE}
+# custom boxes
+knitr::opts_template$set(
+  clues = list(box.title = "Clues",
+               box.body = list(fill = "#fff9dc", colour = "black"),
+               box.header = list(fill = "#ffec8b", colour = "black"),
+               box.icon = "fa-search",
+               box.collapse = TRUE)
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy()
+```
+
+We've finally arrived at creating our first maps based on the data we imported and cleaned in the previous sessions. Let's start super simple. 
+
+Yet, remember that we had to fix geometries with `sf::st_make_valid()` during the session? `tmap` has a global option to do that automatically for you. Now that's nice, right? Run it first in order to conduct the exercises.
+
+```{r check-and-fix}
+tmap::tmap_options(check.and.fix = TRUE)
+```
+
+```{block, box.title = "1", box.body = list(fill = "white"), box.icon = "fa-star"}
+Again, import the `corona_cologne` dataset. Create a map with only the outline of Cologne is visible.
+```
+
+```{block, opts.label = "clues"}
+Remember the different `tm_XYZ()` functions for polygon data.
+```
+
+```{r first.exercise, solution = TRUE}
+library(tmap)
+
+corona_cologne <-
+  sf::st_read(
+    "./data/corona_cologne.shp"
+  )
+
+tm_shape(corona_cologne) +
+  tm_fill(col = "lightgrey") 
+```
+
+```{block, box.title = "2", box.body = list(fill = "white"), box.icon = "fa-star"}
+Now, create a map where the district's borders are visible. If your adventurous you could play a bit with different colors using the `col` argument.
+```
+
+```{block, opts.label = "clues"}
+The `col` argument is within the function call for the polygons.
+```
+
+```{r second.exercise, solution = TRUE}
+tm_shape(corona_cologne) +
+  tm_polygons(col = "lightblue") 
+
+tm_shape(corona_cologne) +
+  tm_polygons(col = "pink") 
+```
+
+```{block, box.title = "3", box.body = list(fill = "white"), box.icon = "fa-star"}
+Visualize some information about Covid-19 cases within the districts using the number of cases in the last seven days per 100,000 inhabitants (`a_7_100`.)
+```
+
+```{block, opts.label = "clues"}
+You now have to define the column name within the function call for the polygons.
+```
+
+```{r third.exercise, solution = TRUE}
+tm_shape(corona_cologne) +
+  tm_polygons("a_7_100") 
+```
+
+```{block, box.title = "4", box.body = list(fill = "white"), box.icon = "fa-star"}
+Alternate the map by changing the color palette to our one suitable for color vision deficiencies.
+```
+
+```{block, opts.label = "clues"}
+There is not only `viridis`. You can also try `magma`, `plasma`, `inferno`, and `cividis`. Generally, it is worthwhile to run the function `tmaptools::palette_explorer()` to have a look at different color palettes.
+```
+
+```{r fourth.exercise, solution = TRUE}
+tm_shape(corona_cologne) +
+  tm_polygons("a_7_100", palette = "viridis") 
+
+tm_shape(corona_cologne) +
+  tm_polygons("a_7_100", palette = "magma") 
+
+tm_shape(corona_cologne) +
+  tm_polygons("a_7_100", palette = "plasma") 
+
+tm_shape(corona_cologne) +
+  tm_polygons("a_7_100", palette = "inferno") 
+```
+
+```{block, box.title = "5", box.body = list(fill = "white"), box.icon = "fa-star"}
+Add a legend title and place the legend outside of the map/frame to the left.
+```
+
+```{block, opts.label = "clues"}
+To figure out how to define the location of the map refer to `?tm_layout`
+```
+
+```{r fifth.exercise, solution = TRUE}
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "a_7_100", 
+    palette = "viridis",
+    title = "Covid-19 Cases per Last 100,000 Inhabitants\nin the last seven days "
+    ) +
+  tm_layout(
+    legend.outside = TRUE,
+    legend.outside.position = "left"
+    )
+```
+
+```{block, box.title = "6", box.body = list(fill = "white"), box.icon = "fa-star"}
+Add a compass and a scale bar to the map. Place the compass to the top right corner and the scale bar to the bottom left.
+```
+
+```{block, opts.label = "clues"}
+You could also try playing with some of the styles for the compass (`?tm_compass`)
+```
+
+```{r sixth.exercise, solution = TRUE}
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "a_7_100", 
+    palette = "viridis",
+    title = "Covid-19 Cases per Last 100,000 Inhabitants\nin the last seven days "
+    ) +
+  tm_layout(
+    legend.outside = TRUE,
+    legend.outside.position = "left"
+    ) +
+  tm_scale_bar(
+    position =  "left"
+  ) +
+  tm_compass(
+    position = c("right", "top"),
+    type = "radar"
+  )
+```
+
+```{block, box.title = "7", box.body = list(fill = "white"), box.icon = "fa-star"}
+Finally, import the `hospitals_cologne` data and plot them as points onto the map. Chose a proper color.
+```
+
+```{block, opts.label = "clues"}
+You could also try playing with some of the styles for the compass (`?tm_compass`)
+```
+
+```{r seventh.exercise, solution = TRUE}
+hospitals_cologne <- 
+  sf::st_read(
+    "./data/hospitals_cologne.shp"
+  )
+
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "a_7_100", 
+    palette = "viridis",
+    title = "Covid-19 Cases per Last 100,000 Inhabitants\nin the last seven days "
+    ) +
+  tm_layout(
+    legend.outside = TRUE,
+    legend.outside.position = "left"
+    ) +
+  tm_scale_bar(
+    position =  "left"
+  ) +
+  tm_compass(
+    position = c("right", "top"),
+    type = "radar"
+  ) +
+  tm_shape(hospitals_cologne) +
+  tm_dots(col = "red")
+```
+
+
+

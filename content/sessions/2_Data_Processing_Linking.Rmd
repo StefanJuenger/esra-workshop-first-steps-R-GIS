@@ -1,0 +1,643 @@
+---
+title: "First Steps on Using R as a GIS"
+subtitle: "Data Processing & Spatial Linking"
+author: "Stefan Jünger<br>July 08, 2021"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    seal: true
+    css: ["default", "../assets/css/gesis.css"]
+    nature:
+      highlightStyle: "github"
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+```{r init-chunk, include = FALSE}
+# load all packages
+source("./content/R/load_packages.R")
+
+opts_chunk$set(echo = TRUE, fig.align = "center", message = FALSE, cache = FALSE)
+
+# load course content table
+source("./content/R/course_content.R")
+
+options(warn = -1)
+
+xaringanExtra::use_xaringan_extra(c("tile_view", "clipboard"))
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = FALSE  #<<
+)
+```
+
+---
+
+## Now
+
+```{r course-content-now, echo = FALSE}
+course_content %>%
+  kableExtra::row_spec(3, background = "yellow")
+```
+
+---
+
+## Why care about data types and formats?
+
+.pull-left[
+- Different commands to import and handle the data
+- Spatial linking techniques and analyses partially determined by the data format
+- Visualization of data can differ
+]
+
+.pull-right[
+```{r layers, echo = FALSE, out.width="100%"}
+knitr::include_graphics(normalizePath("./content/img/layers.png"))
+```
+]
+
+---
+
+## Visual Difference of Vector and Raster Data
+
+```{r pic-geometries-1, echo = FALSE, out.width = "40%"}
+knitr::include_graphics(normalizePath("./content/img/fig_geometries.png"))
+```
+
+---
+
+## More formally, what are...
+
+.pull-left[
+**...Vector Data?**
+- Each real-world feature is represented as one of three types of geometries:
+- Points: discrete location (f.e., city)
+- Lines: linear feature   (f.e., river)
+- Polygons: enclosed area  (f.e., country)
+- Geometries are not fixed
+]
+
+--
+
+.pull-right[
+**...Raster Data?**
+- Hold information on (most of the time) evenly shaped grid cells
+- Basically, a simple data table
+- each cell represents one observation
+]
+
+---
+
+## Vector data's main characteristic
+
+<br>
+.pull-left[
+Geometries' 3 types of information:
+- location (points, lines, and polygons)
+- length (lines and polygons)
+- area (polygons)
+]
+
+.pull-right[
+We need to assign attributes to each geometry:
+- attribute tables (i.e., data tables).
+- rows = geometric object (i.e., observation, case, feature)
+- column = attribute (i.e., variable)
+]
+
+---
+
+class: middle
+
+<br>
+```{r attribute-table, echo = FALSE, out.width="85%"}
+knitr::include_graphics(normalizePath("./content/img/attr_table.png"))
+```
+
+---
+
+## Raster data's main characteristic
+
+<br>
+- Information about geometries are globally stored
+- their location in space is defined by their cell location in the data table
+- information about raster cells' resolution are stored as metadata
+- Usually, rasters only comprise one attribute
+- one raster layer can comprise several bands though (e.g., rgb-bands)
+
+---
+
+class: middle
+```{r table-to-raster, echo = FALSE, out.width="85%"}
+knitr::include_graphics(normalizePath("./content/img/table_to_raster.png"))
+```
+
+
+---
+
+## File Formats
+
+<br>
+<br>
+.pull-left[
+**Vector Data**
+- Shapefile (.shp & Co)
+- .geojson
+- ...
+- .kml
+- .gml
+]
+
+--
+
+.pull-right[
+**Raster Data**
+- Gtiff/GeoTiff
+- JPEG2000
+- ...
+- .grd
+- netCDF
+]
+
+---
+
+## Importing data: we only need two commands
+
+<br>
+.pull-left[
+**Vector data**
+
+```{r read-sf, eval = FALSE}
+sf::st_read()
+```
+]
+
+--
+
+.pull-right[
+**Raster data**
+
+```{r read-stars, eval = FALSE}
+stars::read_stars()
+```
+]
+
+---
+
+## Reading vector data in practise: Covid-19 cases in Cologne
+
+```{r corona-cologne}
+corona_cologne <-
+  sf::read_sf(
+    "./data/corona_cologne.shp"
+  )
+
+corona_cologne
+```
+
+---
+
+## The `geometry` column
+
+```{r geometry-column}
+corona_cologne["geometry"]
+```
+
+---
+
+## Reading vector data in practise: hospitals in Cologne
+
+```{r hospitals-cologne}
+hospitals_cologne <-
+  sf::read_sf(
+    "./data/hospitals_cologne.shp"
+  )
+
+hospitals_cologne
+```
+
+---
+
+## The `geometry` column
+
+```{r geometry-column-2}
+hospitals_cologne["geometry"]
+```
+
+---
+
+## How do I know they are vectors? First check: Plot layers with `plot()`!
+
+.pull-left[
+```{r corona-map}
+plot(corona_cologne["anzhl_g"])
+```
+]
+
+--
+
+.pull-right[
+```{r hospitals-map}
+plot(hospitals_cologne["STADTBE"])
+```
+]
+
+---
+
+## Is the CRS correctly assigned? Plot them with `mapview::mapview()`!
+
+.pull-left[
+```{r corona-mapview, fig.align='center', eval = FALSE, out.height="50%"}
+mapview::mapview(
+  corona_cologne["anzhl_g"]
+)
+```
+]
+
+.pull-right[
+```{r corona-mapview-exec, fig.align='center', echo = FALSE, eval = FALSE, out.height="50%"}
+mapview::mapview(
+  corona_cologne["anzhl_g"]
+)
+```
+]
+
+---
+
+## ...and the hospitals
+
+.pull-left[
+```{r hospitals-mapview, fig.align='center', eval = FALSE, out.height="50%"}
+mapview::mapview(
+  hospitals_cologne["STADTBE"]
+)
+```
+]
+
+.pull-right[
+```{r hospitals-mapview-exec, fig.align='center', echo = FALSE, eval = FALSE, out.height="50%"}
+mapview::mapview(
+  hospitals_cologne["STADTBE"]
+)
+```
+]
+
+
+---
+
+## Creating new variables
+
+.pull-left[
+```{r incidence}
+corona_cologne <-
+  corona_cologne %>% 
+  dplyr::mutate(
+    incidence = (anzhl_g / einwhnr)
+  )
+```
+]
+
+--
+
+.pull-right[
+```{r incidence-plot, echo = FALSE}
+plot(corona_cologne["incidence"])
+```
+]
+
+---
+
+## Geometric Operations and Spatial Linking
+
+The main advantage of geospatial data is the flexibility of their geometric properties. They make spatial linking of geospatial data straightforward. 
+
+```{r fig-linking, echo = FALSE, out.width="50%"}
+knitr::include_graphics(normalizePath("./content/img/fig_3d_simple.png"))
+```
+
+---
+
+## Linking hospitals to our Corona data
+
+How many hospitals are located in each of Cologne's districts? How would we do that? 
+
+- We project the corona and hospital data in one space
+- We extract the hospitals' information and transfer it to the corona data by counting how many of them fall into the corona datas' polygons
+
+--
+
+(...but first, we first have to check whether our data are valid.
+
+
+```{r make-valid}
+corona_cologne <-
+  sf::st_make_valid(corona_cologne)
+
+hospitals_cologne <-
+  sf::st_make_valid(hospitals_cologne)
+```
+
+)
+
+---
+
+## Detect containing geometries
+
+.pull-left[
+```{r intersections}
+containing <-
+  sf::st_contains(
+    corona_cologne,
+    hospitals_cologne
+  )
+```
+]
+
+--
+
+.pull-right[
+```{r intersections-print, echo = FALSE}
+print(containing, n = 23)
+```
+]
+
+---
+
+## Count containing geometries
+
+```{r intersections-count}
+containing_count <- 
+  lengths(containing)
+
+containing_count
+```
+
+--
+
+We then can add this information as a new variable:
+
+```{r add-intersections}
+corona_cologne <-
+  corona_cologne %>% 
+  dplyr::mutate(
+    hospitals_count = containing_count
+  )
+```
+
+---
+
+## Incidence vs. Hospital Infrastructure
+
+.pull-left[
+```{r incidence-and-hospitals-map, eval = FALSE}
+plot(
+  corona_cologne[
+    c("incidence", "hospitals_count")
+  ]
+)
+```
+]
+
+.pull-right[
+```{r incidence-and-hospitals-map-exec, echo = FALSE}
+plot(
+  corona_cologne[
+    c("incidence", "hospitals_count")
+  ]
+)
+```
+]
+
+---
+
+## There are more geometric confirmation methods
+
+```{css echo = FALSE}
+.rotate {
+  transform: rotate(-90deg);
+  text-align: left;
+}
+```
+
+
+.pull-left[
+```{r geometric-confirmation, echo = FALSE, out.width="75%"}
+knitr::include_graphics(normalizePath("./content/img/geometric_confirmation.png"))
+```
+]
+
+.pull-right[
+<br>
+<br>
+.rotate[
+.tinyisher[
+https://github.com/rstudio/cheatsheets/blob/master/sf.pdf
+]
+]
+
+]
+
+---
+
+## Turning to Raster Data: Information about Immigrant Shares
+
+Covid-19 is a disease disproportionaly affecting social groups.
+
+For example, members of minority groups may be at a higher risk to get infected.
+
+We are going to try to 'corroborate' this finding with German Census 2011 *raster* data.
+
+**However: This is by no means a serious research assessment!**
+
+---
+
+## Loading Raster Data: Immigrants from the German Census 2011
+
+```{r immigrants-cologne}
+immigrants_cologne <-
+  stars::read_stars("./data/immigrants_cologne.tif")
+
+immigrants_cologne
+```
+
+
+---
+
+## Loading Raster Data: Inhabitants from the German Census 2011
+
+```{r inhabitants-cologne}
+inhabitants_cologne <-
+  stars::read_stars("./data/inhabitants_cologne.tif")
+
+inhabitants_cologne
+```
+
+---
+
+## Compare Layers by Plotting
+
+.pull-left[
+```{r plot-immigrants}
+plot(immigrants_cologne)
+```
+]
+
+--
+
+.pull-right[
+```{r plot-inhabitants}
+plot(inhabitants_cologne)
+```
+]
+
+---
+
+## Combining Raster Layers to Calculate New Values: Immigrant Rates
+
+
+```{r combining-raster-layers}
+immigrant_rate <-
+  immigrants_cologne * 100 / 
+  inhabitants_cologne
+
+names(immigrant_rate) <- "immigrant_rate"
+
+immigrant_rate
+```
+
+---
+
+## That's how they look like
+
+.pull-left[
+```{r combined-raster-plot, eval = FALSE, out.width="75%"}
+plot(immigrant_rate)
+```
+]
+
+--
+
+.pull-right[
+```{r combined-raster-plot-exec, echo = FALSE}
+plot(immigrant_rate)
+```
+]
+
+---
+
+## Raster Extraction
+
+To extract the raster values at a specific point by location we can use:
+
+```{r raster-extraction}
+extracted_immigrants <-
+  aggregate(
+    x = 
+      immigrants_cologne %>%
+      stars::st_transform_proj(4326),
+    by = corona_cologne,
+    FUN = mean,
+    na.rm = TRUE
+  )
+
+extracted_immigrants
+```
+
+---
+
+## Add Results to Existing Dataset
+
+This information can simply be added to an existing dataset:
+
+.pull-left[
+```{r add-results, eval = FALSE}
+corona_cologne <-
+  corona_cologne %>% 
+  dplyr::mutate(
+    immigrants = extracted_immigrants[[1]]
+  )
+
+plot(
+  corona_cologne[
+    c(
+      "incidence", 
+      "immigrants", 
+      "hospitals_count"
+    )
+  ]
+)
+```
+]
+
+--
+
+.pull-right[
+```{r add-results-exec, echo = FALSE}
+corona_cologne <-
+  corona_cologne %>% 
+  dplyr::mutate(
+    immigrants = extracted_immigrants[[1]]
+  )
+
+plot(corona_cologne[
+  c("incidence", "immigrants", "hospitals_count")]
+)
+```
+]
+
+---
+
+## What's next, what's missing?
+
+.pull-left[
+When working with geospatial data, researcher's degree of freedom is huge
+- we can vary the scale and zonation
+- permutation is crazy
+- do it theory-driven!
+]
+
+.pull-right[
+```{r buffer-pic, echo = FALSE, out.width="75%"}
+knitr::include_graphics(normalizePath("./content/img/fig_linking_buffer_sealing.png"))
+```
+]
+
+--
+
+The analysis of geospatial data can get quite sophisticated
+- in the end, it's about modeling and testing spatial dependence
+- you may want to have a look at [Tobias Rüttenauer's fantastic materials from his recent workshop](https://ruettenauer.github.io/SICSS-Spatial/SICSS-spatial_part2.html) to get a first idea
+
+---
+
+class: middle
+
+<br>
+```{r r-gis-meme, out.width="50%", echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/r_gis_meme.jpg"))
+```
+
+
+---
+
+layout: false
+class: center
+background-image: url(../../assets/img/the_end.png)
+background-size: cover
+
+.left-column[
+</br>
+```{r pic-me, echo = FALSE, out.width = "90%"}
+knitr::include_graphics(normalizePath("./content/img/stefan.png"))
+```
+]
+
+.right-column[
+.left[.small[`r icons::fontawesome("envelope")` [`stefan.juenger@gesis.org`](mailto:stefan.juenger@gesis.org)] </br>
+.small[`r icons::fontawesome("twitter")` [`@StefanJuenger`](https://twitter.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("github")` [`StefanJuenger`](https://github.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("home")` [`https://stefanjuenger.github.io`](https://stefanjuenger.github.io)]] </br>
+]

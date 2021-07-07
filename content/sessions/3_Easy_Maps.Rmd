@@ -1,0 +1,621 @@
+---
+title: "First Steps on Using R as a GIS"
+subtitle: "Easy Maps"
+author: "Stefan Jünger<br>July 08, 2021"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    seal: true
+    css: ["default", "../assets/css/gesis.css"]
+    nature:
+      highlightStyle: "github"
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+layout: true
+
+```{r init-chunk, include = FALSE}
+# load all packages
+source("./content/R/load_packages.R")
+
+opts_chunk$set(echo = TRUE, fig.align = "center", message = FALSE, cache = FALSE)
+
+# load course content table
+source("./content/R/course_content.R")
+
+options(warn = -1)
+
+xaringanExtra::use_xaringan_extra(c("tile_view", "clipboard"))
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = FALSE  #<<
+)
+```
+
+
+---
+
+## Now
+
+```{r course-content-now, echo = FALSE}
+course_content %>%
+  kableExtra::row_spec(6, background = "yellow")
+```
+
+---
+
+## Fun with Flags... MAPS, it's Maps!
+
+.center[
+```{r fun-flags, echo = FALSE, out.width = "90%"}
+knitr::include_graphics(normalizePath("./content/img/fun_with_flags.jpg"))
+```
+]
+<br>
+.center[
+<small><small><small> Fun with Flags by Dr. Sheldon Cooper. [Big Bang Theory](https://youtu.be/_e8PGPrPlwA)</small></small></small>
+]
+
+---
+
+## Fun with Maps
+
+.pull-left[
+`plot()` does not allow us to manipulate the maps in an easy. But we already have the two most essential ingredients to create a nice map:
+
+1. One vector layer like our Cologne Corona data.
+2. Some interesting attributes linked with the geometries.
+]
+
+.pull-right[
+```{r corona-cologne, echo = FALSE}
+corona_cologne <-
+  sf::read_sf(
+    "./data/corona_cologne.shp"
+  )  %>% 
+  dplyr::mutate(
+    incidence = (anzhl_g / einwhnr) * 100
+  ) %>% 
+  sf::st_make_valid()
+
+hospitals_cologne <-
+  sf::read_sf(
+    "./data/hospitals_cologne.shp"
+  )
+
+streets_cologne <-
+  sf::read_sf(
+    "./data/streets_cologne.shp"
+  )
+
+plot(corona_cologne["incidence"])
+```
+
+]
+
+---
+
+## What Makes a Good Map?
+
+<br>
+.pull-left[
+**Good Mapping**
+- reduction to most important information
+- legends, scales, descriptions
+- audience oriented
+- adjusted for color vision deficiencies
+]
+
+--
+
+.pull-right[
+**Bad Mapping**
+- overcrowding and overlapping
+- unreadable information
+- missing information like the legend or source
+- poor choice of color palettes
+]
+
+---
+
+## What Makes a Good Map?
+
+.pull-left[
+.center[![](https://media.giphy.com/media/C9x8gX02SnMIoAClXa/giphy-downsized-large.gif)]
+.tinyisher[.center[[Source](https://media.giphy.com/media/C9x8gX02SnMIoAClXa/giphy-downsized-large.gif)]]
+]
+
+.pull-right[
+... but there is one other type:
+
+.center[
+**The fast but nice map.**
+]
+
+- fast exploration of spatial data by visualizing the geometries and attributes
+- might not be publication-ready yet, but they are more rewarding than just plotting information.
+]
+
+---
+
+## The Choice is Yours: `R` Packages for Mapping
+
+<br>
+<br>
+As always, `R`  offers several ways to map spatial data, and the provided packages are various.
+What is out there? Just a few:
+- base R graphics package: [`mapdata`](https://rpubs.com/rbatzing/mapping)
+- mobile-friendly interactive maps: [`leaflet`](https://rstudio.github.io/leaflet/)
+- interactive and static thematic maps based on shapefiles:
+- [`tmap`](https://mran.microsoft.com/snapshot/2014-12-22/web/packages/tmap/vignettes/tmap-nutshell.html)
+- [`mapview`](https://r-spatial.github.io/mapview/)
+
+
+---
+
+## Our Choice Today
+
+Today, we'll concentrate on the package [`tmap`](https://cran.r-project.org/web/packages/tmap/index.html)
+- very intuitive and makes "good" decisions for us
+- the syntax is very similar to [`ggplot2`](https://cran.r-project.org/web/packages/ggplot2/index.html)* 
+
+```{r world-map, echo = FALSE, out.width="50%"}
+knitr::include_graphics(normalizePath("./content/img/68747470733a2f2f6d74656e6e656b65732e6769746875622e696f2f646f776e6c6f6164732f696d616765732f636c61737369632e706e67.png"))
+```
+.tinyisher[.center[[Source](https://camo.githubusercontent.com/63d5460e5fdfb78d42eedeaa54c14b63fcb7c872ac85e8c49fd1fd827553e9be/68747470733a2f2f6d74656e6e656b65732e6769746875622e696f2f646f776e6c6f6164732f696d616765732f636c61737369632e706e67)]]
+
+
+
+.footnote[*A wide-known 'secret' is that `tmap` creates a map based on `ggplot2`, so `ggplot2`-specific graphics manipulations will work as well.]
+
+---
+
+## First Map: Our Corona Data (again, but prettier)
+
+.pull-left[
+```{r first-map, eval = FALSE}
+tm_shape(corona_cologne) +
+  tm_fill("incidence")
+```
+]
+
+--
+
+.pull-right[
+```{r first-map-exec, echo = FALSE}
+tm_shape(corona_cologne) +
+  tm_fill("incidence")
+```
+]
+
+
+---
+
+## `tmap` in a nutshell
+
+.pull-left[
+There is not much to consider when using `tmap` but essential two requirements:
+1. Define your spatial object.
+2. Choose a building block to determine how to display information.
+]
+
+--
+
+.pull-right[
+```{r tmap-display, eval = FALSE}
+# define and introduce every (new) 
+# geospatial data object
+tm_shape() +
+  
+  # choose at least one building block as 
+  # 'aesthetic layer'
+  
+  # for polygon layer choose from:
+  tm_fill() + # polygons without borders
+  tm_polygons() +  # polygons with borders
+  tm_borders() + # only borders of polygons
+  
+  # for line layer choose:
+  tm_lines() +
+  
+  # for point layer choose:
+  tm_dots() +
+  tm_bubbles() +
+  
+  # for raster layer choose
+  tm_raster() +
+  tm_rgb() +
+  
+  ...
+
+# for all of them:
+?'tmap-element'
+```
+]
+
+---
+
+## `tmap` in a nutshell: Polygon layer
+
+.pull-left[
+```{r pol-layer-disp, eval=F}
+
+tm_shape(corona_cologne) +
+  tm_fill()
+
+tm_shape(corona_cologne) +
+  tm_polygons()
+
+tm_shape(corona_cologne) +
+  tm_borders()
+```
+]
+
+--
+
+.pull-right[
+```{r pol-layer, echo=F, fig.height=3}
+
+tm_shape(corona_cologne) +
+  tm_fill()
+
+tm_shape(corona_cologne) +
+  tm_polygons()
+
+tm_shape(corona_cologne) +
+  tm_borders()
+```
+]
+
+---
+
+## `tmap` in a nutshell: Line and Point layer
+
+.pull-left[
+```{r line-layerdisp, eval=F, fig.height=4}
+tm_shape(streets_cologne) +
+  tm_lines()
+
+tm_shape(hospitals_cologne) +
+  tm_dots()
+```
+]
+
+--
+
+.pull-right[
+```{r line-layer, echo = F, fig.height=4 }
+tm_shape(streets_cologne) +
+  tm_lines()
+
+tm_shape(hospitals_cologne) +
+  tm_dots()
+```
+]
+---
+
+## `tmap` in a nutshell: Put it all together
+
+We can map the geometric attributes as single layers, but we can also layer our map and stack the layers on each other.
+
+--
+
+.pull-left[
+```{r over-lay-disp, eval = F}
+tm_shape(corona_cologne) +
+  tm_polygons() +
+  tm_shape(streets_cologne) +
+  tm_lines() +
+  tm_shape(hospitals_cologne) +
+  tm_dots(col = "red")
+```
+]
+
+--
+
+.pull-right[
+```{r over-lay, echo = F}
+tm_shape(corona_cologne) +
+  tm_polygons() +
+  tm_shape(streets_cologne) +
+  tm_lines() +
+  tm_shape(hospitals_cologne) +
+  tm_dots(col = "red")
+```
+]
+
+
+---
+
+## Add Some Information
+
+<br>
+<br>
+
+After we took care of our geometric types, we want to add some information to our data.
+The inner construction of each building block of `tm_elements` is the same.
+1. Define the variable of interest first by stating the column name. 
+2. Add a name for legend title, color palette, adjust legend, scales ...
+
+
+---
+
+## Chosing an attribute
+
+.pull-left[
+```{r life-exp-disp, eval = F}
+tm_shape(corona_cologne) +
+  tm_polygons("incidence") 
+```
+]
+
+--
+
+.pull-right[
+.center[
+```{r life-exp, echo = F}
+tm_shape(corona_cologne) +
+  tm_polygons("incidence") 
+```
+]
+]
+
+---
+
+## Chosing a color palette
+
+.pull-left[
+```{r add-attributes-disp, eval = F}
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "incidence",
+    palette = "RdPu",
+    title = "Incidence",
+    style = "kmeans"
+  ) 
+```
+]
+
+--
+
+.pull-right[
+.center[
+```{r add-attributes, echo = F}
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "incidence",
+    palette = "RdPu",
+    title = "Incidence",
+    style = "kmeans"
+  ) 
+```
+]
+]
+
+---
+
+## Re-placing the legend
+
+.pull-left[
+```{r add-attributes-disp-legend, eval = F}
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "incidence",
+    palette = "RdPu",
+    title = "Incidence",
+    style = "kmeans"
+  ) +
+  tm_layout(
+    legend.outside = TRUE
+  )
+```
+]
+
+.pull-right[
+.center[
+```{r add-attributes-legend, echo = F}
+tm_shape(corona_cologne) +
+  tm_polygons(
+    "incidence",
+    palette = "RdPu",
+    title = "Incidence",
+    style = "kmeans"
+  )  +
+  tm_layout(
+    legend.outside = TRUE
+  )
+```
+]
+]
+
+---
+
+## What's left?
+
+<br>
+.center[
+```{r enough-maps, echo = FALSE, out.width = "70%"}
+knitr::include_graphics(normalizePath("./content/img/enough_maps.jpg"))
+```
+]
+
+---
+
+## Compasses & Scalebars
+
+.pull-left[
+```{r compass-scalebar-I}
+tm_shape(corona_cologne) +
+  tm_polygons("incidence") +
+  tm_scale_bar() +
+  tm_compass()
+```
+]
+
+--
+
+.pull-right[
+```{r compass-scalebar-II}
+tm_shape(corona_cologne) +
+  tm_polygons("incidence") +
+  tm_scale_bar(position = "left") +
+  tm_compass(type = "4star")
+```
+]
+
+---
+
+## Add a background from OpenStreetMap
+
+.pull-left[
+```{r cologne-raster-map-bg, eval = FALSE}
+tmaptools::read_osm(
+  corona_cologne
+) %>% 
+  tm_shape() +
+  tm_rgb() +
+  tm_shape(corona_cologne) +
+  tm_borders(col = "red")
+```
+]
+
+--
+
+.pull-right[
+```{r cologne-raster-map-bg-exec, ref.label = "cologne-raster-map-bg", echo = FALSE}
+```
+]
+
+
+---
+
+## Playing With Different Map Types
+
+Call `OpenStreetMap::getMapInfo()` for a complete list.
+
+.pull-left[
+```{r esri, out.width = "70%"}
+tmaptools::read_osm(
+  corona_cologne, 
+  type = "esri-topo"
+) %>% 
+  tm_shape() +
+  tm_rgb() +
+  tm_shape(corona_cologne)  +
+  tm_borders(col = "red")
+```
+]
+
+--
+
+.pull-right[
+```{r stamen, out.width = "70%"}
+tmaptools::read_osm(
+  corona_cologne, 
+  type = "stamen-watercolor"
+) %>% 
+  tm_shape() +
+  tm_rgb() +
+  tm_shape(corona_cologne)  +
+  tm_borders(col = "red")
+```
+
+]
+
+---
+
+## Getting interactive (as an alternative to `mapview::mapview()`)!
+
+```{r interactive-map, eval = FALSE}
+tmap_mode("view")
+
+tm_shape(corona_cologne) +
+  tm_borders(col = "red")
+```
+
+---
+
+# Note on Mapping Responsible
+
+.pull-left[
+**In the best cases**, maps are easy to understand and an excellent way to transport (scientific) messages.
+]
+
+.pull-right[
+**In the worst cases**, they simplify (spurious) correlations and draw a dramatic picture of the world.
+]
+
+**Maps can shape narratives**
+- Decisions on which projection you use (remember the `true size` projector?), 
+- the segment of the world you choose, 
+- and the colors you add have a strong influence.
+
+Example: [Kenneth Field's blog post](https://www.esri.com/arcgis-blog/products/product/mapping/mapping-coronavirus-responsibly/)
+
+---
+
+## Color Vision Deficiencies: Standard Palette
+
+```{r color-def, echo = FALSE, out.width="55%"}
+tmp <-
+  tm_shape(corona_cologne) +
+  tm_polygons("incidence") +
+  tm_scale_bar(position = "left") +
+  tm_compass(type = "4star")
+
+colorBlindness::cvdPlot(tmp)
+```
+
+.tinyisher[Created with the package [`colorBlindness`](https://cran.r-project.org/web/packages/colorBlindness/index.html)]
+
+---
+
+## Color Vision Deficiencies: Virdis Palette
+
+```{r color-def-virdis, echo = FALSE, out.width="55%"}
+tmp <-
+  tm_shape(corona_cologne) +
+  tm_polygons("incidence", palette = "viridis") +
+  tm_scale_bar(position = "left") +
+  tm_compass(type = "4star")
+
+colorBlindness::cvdPlot(tmp)
+```
+
+.tinyisher[Created with the package [`colorBlindness`](https://cran.r-project.org/web/packages/colorBlindness/index.html)]
+
+---
+
+## More resources
+
+<br>
+If you want to dive deeper into mapping with `tmap` check out:
+- Introduction by [Thomas Lo Russo](https://tlorusso.github.io/geodata_workshop/tmap_package)
+- Blogpost by [Hollie Zevross](http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/)
+
+And if you want to get some inspiration, keep an eye out for the `#30DayMapChallenge` on Twitter.
+Repository of Last Year's Challenge [here](https://github.com/tjukanovt/30DayMapChallenge).
+
+
+---
+
+layout: false
+class: center
+background-image: url(../../assets/img/the_end.png)
+background-size: cover
+
+.left-column[
+</br>
+```{r pic-me, echo = FALSE, out.width = "90%"}
+knitr::include_graphics(normalizePath("./content/img/stefan.png"))
+```
+]
+
+.right-column[
+.left[.small[`r icons::fontawesome("envelope")` [`stefan.juenger@gesis.org`](mailto:stefan.juenger@gesis.org)] </br>
+.small[`r icons::fontawesome("twitter")` [`@StefanJuenger`](https://twitter.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("github")` [`StefanJuenger`](https://github.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("home")` [`https://stefanjuenger.github.io`](https://stefanjuenger.github.io)]] </br>
+]

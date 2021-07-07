@@ -1,0 +1,456 @@
+---
+title: "First Steps on Using R as a GIS"
+subtitle: "Introduction"
+author: "Stefan Jünger<br>July 08, 2021"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    seal: true
+    css: ["default", "../assets/css/gesis.css"]
+    nature:
+      highlightStyle: "github"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+layout: true
+
+```{r init-chunk, include = FALSE}
+# load all packages
+source("./content/R/load_packages.R")
+
+opts_chunk$set(echo = TRUE, fig.align = "center", message = FALSE, cache = FALSE)
+
+# load course content table
+source("./content/R/course_content.R")
+
+options(warn = -1)
+
+xaringanExtra::use_xaringan_extra(c("tile_view", "clipboard"))
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = FALSE  #<<
+)
+```
+
+---
+
+## About This Course
+
+<br>
+<br>
+This (short) course will teach you how to exploit `R` and apply some of its geospatial techniques.*
+
+By the end of this course, you should...
+
+- be less frightened with using geospatial data in `R`
+  - including importing, wrangling, and exploring geospatial data
+- be able to create (simple) maps based on your very own processed geospatial data in `R`
+
+.footnote[*Some materials are part of a previous workshop, for which I'd like to thank [Anne-Kathrin Stroppe](https://twitter.com/AStroppe).]
+
+---
+
+## Prerequisites for This Course
+
+.pull-left[
+- At least basic knowledge of `R`, its syntax, and internal logic
+  - Affinity for using script-based languages
+  - Don't be scared to wrangle data with complex structures
+- Working versions of `R` (and `Rstudio`) on your computer 
+  - Ideally, with the packages installed, I asked you upfront
+]
+
+.pull-right[
+<br>
+<br>
+```{r gates, echo = FALSE, out.width="75%"}
+knitr::include_graphics(normalizePath("./content/img/i-love-programming.jpg"))
+```
+
+.tinyisher[.center[[Source](https://makeameme.org/meme/i-love-programming)]]
+]
+
+---
+
+## About Me
+
+.pull-left[
+```{r me-pic, echo = FALSE, out.width = "50%"}
+knitr::include_graphics(normalizePath("./content/img/stefan.png"))
+```
+]
+
+.pull-right[
+- Postdoctoral researcher in the team Data Augmentation at the GESIS department Survey Data Curation
+- Ph.D. in social sciences, University of Cologne
+]
+
+- Research interests:
+  - quantitative methods
+  - social inequalities & attitudes towards minorities
+  - data management & data privacy
+  - reproducible research
+
+.small[
+[stefan.juenger@gesis.org](mailto:stefan.juenger@gesis.org) |
+[@StefanJuenger](https://twitter.com/StefanJuenger) |
+[https://stefanjuenger.github.io](https://stefanjuenger.github.io)
+]
+
+
+---
+
+## About You
+
+.pull-left[
+- What's your name?  
+- Where do you work/research? What are you working on/researching?
+- What is your experience with `R` or other programming languages?
+- Do you already have experience with geospatial data?
+]
+
+.pull-right[
+<br>
+```{r tell-me, echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/so-tell-me-5be02d.jpg"))
+```
+.tinyisher[.center[[Source](https://makeameme.org/meme/so-tell-me-5be02d)]]
+]
+- **What do you want to use `R` and geospatial data for?**
+
+---
+
+## Preliminaries
+<br>
+<br>
+- The workshop consists of a combination of a few lectures and hands-on exercises
+- Feel free to ask questions at any time
+- Slides and other materials are also available at:
+
+.center[`XXX`]
+
+---
+
+## Course Schedule
+
+```{r course-content, echo = FALSE}
+course_content
+```
+
+---
+
+## Now
+
+```{r course-content-now, echo = FALSE}
+course_content %>%
+  kableExtra::row_spec(1, background = "yellow")
+```
+
+---
+
+## What Are Geospatial Data?
+
+.pull-left[
+Data with a direct spatial reference $\rightarrow$ **geo-coordinates**
+- Information about geometries
+- Optional: Content in relation to the geometries
+
+Can be projected jointly in one single space
+- Allows data linking and extraction of substantial information
+]
+
+.pull-right[
+```{r pic-geometries-1, echo = FALSE, out.width = "85%"}
+knitr::include_graphics(normalizePath("./content/img/fig_geometries.png"))
+```
+
+.tinyisher[Sources: OpenStreetMap / GEOFABRIK (2018), City of Cologne (2014), and the Statistical Offices of the Federation and the Länder (2016) / Jünger, 2019]
+]
+
+---
+
+## Geospatial Data in This Course 
+
+In the folder called `./data` in the same folder as the other materials for this workshop, you can find the data files prepped for all the exercises and slides.
+
+- Covid-19 cases for Cologne across the city's districts available at the [Open Data Portal of Cologne](https://www.offenedaten-koeln.de/dataset/corona-fallzahlen-koeln)
+- Hospital locations in Cologne are also distributed via the [Open Data Portal of Cologne](https://www.offenedaten-koeln.de/dataset/krankenh%C3%A4user-k%C3%B6ln)
+- Cologne's road network; [guess from where](https://www.offenedaten-koeln.de/dataset/strasse)
+- Number of immigrants and inhabitants from German Census 2011 data are provided by the [Federal Statistical Office Germany, Wiesbaden 2020](https://www.zensus2011.de/EN/Home/home_node.html)
+
+**Please make sure that if you reuse any of the provided data to cite the original data sources.**
+
+---
+
+## What Is GIS?
+
+Most common understanding: Geographic Information Systems (GIS) as specific software to process geospatial data for 
+- Visualization
+- Analysis
+
+```{r pic-gis, echo = FALSE, out.width = "70%", fig.align = "center"}
+knitr::include_graphics(normalizePath("./content/img/gis.png"))
+```
+
+.center[.tinyisher[Screenshot of the Open Source GIS [`QGIS`](https://qgis.org)]]
+
+---
+
+## Data Specifics
+
+.pull-left[
+</br>
+</br>
+```{r pic-geometries-2, echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/fig_3d_simple.png"))
+```
+
+.tinyisher[Sources: OpenStreetMap / GEOFABRIK (2018) and City of Cologne (2014)]
+]
+
+.pull-right[
+Formats
+- Vector data (points, lines, polygons)
+- Raster data (grids)
+
+Coordinate reference systems (CRS)
+- Allow the projection on earth's surface
+- Differ in precision for specific purposes
+]
+
+---
+
+## Layers Must Match!
+
+.pull-left[
+.center[
+**Projected CRS**
+(EPSG:3857)
+]
+]
+
+.pull-right[
+.center[
+**Geographic CRS**
+(EPSG:3035)
+]
+]
+
+```{r pic-crs, echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/fig_projections.png"))
+```
+
+.tinyisher[Source: Statistical Office of the European Union Eurostat (2018) / Jünger, 2019]
+
+---
+
+## Types of CRS
+
+<br>
+.pull-left[
+**Projected CRS**
+- projection of geometries on a flat surface (planar)
+- distance between two points is a straight line
+]
+
+.pull-right[
+**Geographic CRS**
+- (unprojected) description of specific points on a sphere
+- distance between two points is a bent line
+]
+
+<br>
+(There are also geocentric CRS requiring a z-coordinate...)
+
+
+---
+
+class: middle
+
+```{r layers-meme, echo = FALSE, out.width="70%"}
+knitr::include_graphics(normalizePath("./content/img/layers_meme.jpg"))
+```
+
+---
+
+## CRS Definitions
+
+Old Standard: `PROJ.4` Strings
+
+```
++proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs 
+```
+
+--
+
+.small[Source: https://epsg.io/3035]
+
+New Kid in Town: `WKT` (“Well Known Text”)
+
+.small[
+```
+PROJCS["ETRS89 / LAEA Europe",
+    GEOGCS["ETRS89",
+        DATUM["European_Terrestrial_Reference_System_1989",
+            SPHEROID["GRS 1980",6378137,298.257222101,
+                AUTHORITY["EPSG","7019"]],
+            TOWGS84[0,0,0,0,0,0,0],
+            AUTHORITY["EPSG","6258"]],
+        PRIMEM["Greenwich",0,
+            AUTHORITY["EPSG","8901"]],
+        UNIT["degree",0.0174532925199433,
+            AUTHORITY["EPSG","9122"]],
+        AUTHORITY["EPSG","4258"]],
+    PROJECTION["Lambert_Azimuthal_Equal_Area"],
+    PARAMETER["latitude_of_center",52],
+    PARAMETER["longitude_of_center",10],
+    PARAMETER["false_easting",4321000],
+    PARAMETER["false_northing",3210000],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]],
+    AUTHORITY["EPSG","3035"]]
+```
+]
+
+.tinyisher[Source: https://epsg.io/3035]
+
+---
+
+## EPSG Codes
+
+.pull-left[
+Eventually, it's not as challenging to work with CRS in `R` as it may seem
+- we don't have to use PROJ.4 or WKT strings directly.
+
+Most of the times it's enough to use so-called EPSG Codes ("European Petroleum Survey Group Geodesy")
+- Small digit sequence
+]
+
+.pull-right[
+<br>
+```{r epsg-icon, echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/ImageEPSGlogo.gif"))
+```
+.tinyisher[.center[[Source](http://geotiff.maptools.org/proj_list/guid7.html)]]
+]
+
+---
+
+## More Details on Geospatial Data
+
+Let's learn about geospatial data as we learn about specific formats:
+- vector data 
+- raster data
+
+.pull-left[
+```{r geo-real-worls, echo = FALSE, out.width="75%"}
+knitr::include_graphics(normalizePath("./content/img/Raster-and-Vector-data-types-as-representative-of-real-world-geographic-space_W640.jpg"))
+```
+
+.tinyisher[.center[[Source](https://dx.doi.org/10.13140/2.1.3030.1767)]]
+]
+
+.pull-right[
+Be assured: `R` can serve as a full-blown Geographic Information System (GIS) for all these different data types.
+]
+
+---
+
+## `R` Packages for Geospatial Data
+
+There have been packages for geospatial data in `R` already for a long time.
+
+.pull-left[
+- [`sp`](https://cran.r-project.org/web/packages/sp/index.html) for vector data
+- [`raster`](https://cran.r-project.org/web/packages/raster/index.html) for raster data
+  - the successor: [`terra`](https://cran.r-project.org/web/packages/terra/index.html)
+
+
+Cutting-edge for vector data and raster data (cubes)
+- [`sf`](https://cran.r-project.org/web/packages/sf/index.html)
+- [`stars`](https://r-spatial.github.io/stars/)
+]
+
+.pull-right[
+<br>
+```{r pic-sf, echo = FALSE, out.width = "80%"}
+knitr::include_graphics(normalizePath("./content/img/sf.jpg"))
+```
+
+.tinyisher[Illustration by [Allison Horst](https://github.com/allisonhorst/stats-illustrations)]
+]
+
+---
+
+## Packages in This Course
+
+We will use plenty of different packages during the course, but only a few are our main drivers (e.g., the `sf` package). Here's the list of packages
+
+
+- [`dplyr`](https://cran.r-project.org/web/packages/dplyr/index.html)
+- [`mapview`](https://cran.r-project.org/web/packages/mapview/index.html)
+- [`sf`](https://cran.r-project.org/web/packages/sf/index.html)
+- [`stars`](https://cran.r-project.org/web/packages/stars/index.html)
+- [`tmap`](https://cran.r-project.org/web/packages/tmap/index.html)
+- [`tmaptools`](https://cran.r-project.org/web/packages/tmaptools/index.html)
+
+*Note*: Some additional packages will be installed as dependencies.
+
+---
+
+## What You'll See during the Course: Piping In `R`
+
+Usually, in `R` we apply functions as follows:
+
+```{r function-r, echo = TRUE, eval = FALSE}
+f(x)
+```
+
+In the logic of pipes this function is written as:
+
+```{r function-pipe, echo = TRUE, eval = FALSE}
+x %>% f(.)
+```
+
+--
+
+We can use pipes on more than one function:
+
+```{r function-pipe-2, echo = TRUE, eval = FALSE}
+x %>% 
+  f_1() %>% 
+  f_2() %>% 
+  f_3()
+```
+
+More details: https://r4ds.had.co.nz/pipes.html
+
+---
+
+class: middle
+## Exercise 1: R Warm up
+
+[Exercise](XXX)
+
+[Solution](XXX)
+
+---
+
+layout: false
+class: center
+background-image: url(../../assets/img/the_end.png)
+background-size: cover
+
+.left-column[
+</br>
+```{r pic-me, echo = FALSE, out.width = "90%"}
+knitr::include_graphics(normalizePath("./content/img/stefan.png"))
+```
+]
+
+.right-column[
+.left[.small[`r icons::fontawesome("envelope")` [`stefan.juenger@gesis.org`](mailto:stefan.juenger@gesis.org)] </br>
+.small[`r icons::fontawesome("twitter")` [`@StefanJuenger`](https://twitter.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("github")` [`StefanJuenger`](https://github.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("home")` [`https://stefanjuenger.github.io`](https://stefanjuenger.github.io)]] </br>
+]

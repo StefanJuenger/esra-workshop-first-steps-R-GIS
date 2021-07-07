@@ -1,0 +1,147 @@
+---
+title: "First Steps on Using R as a GIS"
+subtitle: "Closing"
+author: "Stefan Jünger<br>July 08, 2021"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    seal: true
+    css: ["default", "../assets/css/gesis.css"]
+    nature:
+      highlightStyle: "github"
+      highlightLines: true
+      countIncrementalSlides: false
+---
+layout: true
+
+```{r init-chunk, include = FALSE}
+# load all packages
+source("./content/R/load_packages.R")
+
+opts_chunk$set(echo = TRUE, fig.align = "center", message = FALSE, cache = FALSE)
+
+# load course content table
+source("./content/R/course_content.R")
+
+options(warn = -1)
+
+xaringanExtra::use_xaringan_extra(c("tile_view", "clipboard"))
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = FALSE  #<<
+)
+```
+
+---
+
+## Now
+
+```{r course-content-now, echo = FALSE}
+course_content %>%
+  kableExtra::row_spec(8, background = "yellow")
+```
+
+---
+
+## There's so much missing...
+
+<br>
+<br>
+<br>
+1. Spatial Linking Methods
+2. Analysis
+3. Applications
+
+---
+
+## Spatial Linking Methods
+
+.pull-left[
+.tinyisher[1:1]
+```{r pic-noise-by-location, echo = FALSE, out.width = "40%"}
+knitr::include_graphics(normalizePath("./content/img/fig_linking_by_location_noise.png"))
+```
+]
+
+.pull-right[
+.tinyisher[Distances]
+```{r pic-noise-distance, echo = FALSE, out.width = "40%"}
+knitr::include_graphics(normalizePath("./content/img/fig_linking_distance_noise_appI.png"))
+```
+]
+
+.tinyisher[Sources: German Environmental Agency / EIONET Central Data Repository (2016) and OpenStreetMap / GEOFABRIK (2018) / Jünger, 2019]
+
+
+.pull-left[
+.tinyisher[Filter methods]
+```{r pic-immigrants-filter, echo = FALSE, out.width = "40%"}
+knitr::include_graphics(normalizePath("./content/img/fig_linking_focal_immigrants.png"))
+```
+
+]
+
+.pull-right[
+.tinyisher[Buffer zones]
+```{r pic-selaing-buffer, echo = FALSE, out.width = "40%"}
+knitr::include_graphics(normalizePath("./content/img/fig_linking_buffer_sealing.png"))
+```
+]
+
+.tinyisher[Sources: Leibniz Institute of Ecological Urban and Regional Development (2018) and Statistical Offices of the Federation and the Länder (2016) / Jünger, 2019]
+
+---
+
+## Analysis
+
+.pull-left[
+```{r neighbors, echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/neighbors.png"))
+```
+.tinyisher[.center[[Source](https://r-spatial.github.io/spdep/articles/nb_igraph.html)]]
+]
+
+.pull-right[
+```{r spatial-regressions, echo = FALSE}
+knitr::include_graphics(normalizePath("./content/img/spatial_regression_models.png"))
+```
+.tinyisher[.center[[Source: Tobias Rüttenauer's SSCI Workshop](https://ruettenauer.github.io/SICSS-Spatial/SICSS-spatial_part2.html)]]
+]
+
+---
+
+## Application(s): forthcoming in *Urban Studies*
+
+```{r pic-green-estimates, echo = FALSE, out.width = "70%"}
+knitr::include_graphics(normalizePath("./content/img/fig_prediction_green_with_income_interaction_unofficial.png"))
+```
+
+.tinyisher[Data source: GGSS 2016 & 2018; N = 6,117; 95% confidence intervals based on cluster-robust standard errors (sample point); all models control for age, gender, education, household size, german region and survey year interaction, inhabitant size of the municipality, and distance to municipality administration]
+
+---
+
+class: middle
+
+## Q & A
+
+
+---
+
+layout: false
+class: center
+background-image: url(../../assets/img/the_end.png)
+background-size: cover
+
+.left-column[
+</br>
+```{r pic-me, echo = FALSE, out.width = "90%"}
+knitr::include_graphics(normalizePath("./content/img/stefan.png"))
+```
+]
+
+.right-column[
+.left[.small[`r icons::fontawesome("envelope")` [`stefan.juenger@gesis.org`](mailto:stefan.juenger@gesis.org)] </br>
+.small[`r icons::fontawesome("twitter")` [`@StefanJuenger`](https://twitter.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("github")` [`StefanJuenger`](https://github.com/StefanJuenger)] </br>
+.small[`r icons::fontawesome("home")` [`https://stefanjuenger.github.io`](https://stefanjuenger.github.io)]] </br>
+]
