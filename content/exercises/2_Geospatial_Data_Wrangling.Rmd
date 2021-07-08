@@ -202,7 +202,7 @@ Create an immigrant share variable from the two aggregated layers and add them t
 ```
 
 ```{block, opts.label = "clues"}
-You can either do it on-the-fly using `dplyr::mutate()` as on the slides (XXX), or create first a new object and then add it using `base-R` (`corona_cologne$immigrant_share <- ...`). You could even combine the approaches.
+You can either do it on-the-fly using `dplyr::mutate()` as on the slides (no. 33), or create first a new object and then add it using `base-R` (`corona_cologne$immigrant_share <- ...`). You could even combine the approaches.
 
 Either way, what might be a bit cumbersome is that you have to extract the first list element in each of the raster layers (e.g., `immigrants_count[[1]]`)
 ```

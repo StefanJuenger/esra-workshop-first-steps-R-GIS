@@ -260,7 +260,7 @@ mapview::mapview(
 ]
 
 .pull-right[
-```{r corona-mapview-exec, fig.align='center', echo = FALSE, eval = TRUE, out.height="50%"}
+```{r corona-mapview-exec, echo = FALSE, eval = TRUE, out.height="50%"}
 mapview::mapview(
   corona_cologne["anzhl_g"]
 )
