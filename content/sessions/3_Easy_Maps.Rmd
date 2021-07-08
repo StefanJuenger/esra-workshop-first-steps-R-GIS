@@ -50,7 +50,7 @@ course_content %>%
 
 ---
 
-## Fun with Flags... MAPS, it's Maps!
+## Fun With Flags... MAPS, It's Maps!
 
 .center[
 ```{r fun-flags, echo = FALSE, out.width = "90%"}
@@ -64,7 +64,7 @@ knitr::include_graphics(normalizePath("./content/img/fun_with_flags.jpg"))
 
 ---
 
-## Fun with Maps
+## Fun With Maps
 
 .pull-left[
 `plot()` does not allow us to manipulate the maps in an easy. But we already have the two most essential ingredients to create a nice map:
@@ -144,7 +144,7 @@ plot(corona_cologne["incidence"])
 
 ---
 
-## The Choice is Yours: `R` Packages for Mapping
+## The Choice Is Yours: `R` Packages for Mapping
 
 <br>
 <br>
@@ -176,7 +176,7 @@ knitr::include_graphics(normalizePath("./content/img/68747470733a2f2f6d74656e6e6
 
 ---
 
-## First Map: Our Corona Data (again, but prettier)
+## First Map: Our Corona Data (Again, but Prettier)
 
 .pull-left[
 ```{r first-map, eval = FALSE}
@@ -197,7 +197,7 @@ tm_shape(corona_cologne) +
 
 ---
 
-## `tmap` in a nutshell
+## `tmap` In a Nutshell
 
 .pull-left[
 There is not much to consider when using `tmap` but essential two requirements:
@@ -241,7 +241,7 @@ tm_shape() +
 
 ---
 
-## `tmap` in a nutshell: Polygon layer
+## `tmap` In a Nutshell: Polygon Layer
 
 .pull-left[
 ```{r pol-layer-disp, eval=F}
@@ -275,7 +275,7 @@ tm_shape(corona_cologne) +
 
 ---
 
-## `tmap` in a nutshell: Line and Point layer
+## `tmap` In a Nutshell: Line and Point Layer
 
 .pull-left[
 ```{r line-layerdisp, eval=F, fig.height=4}
@@ -300,7 +300,7 @@ tm_shape(hospitals_cologne) +
 ]
 ---
 
-## `tmap` in a nutshell: Put it all together
+## `tmap` In a Nutshell: Put It All Together
 
 We can map the geometric attributes as single layers, but we can also layer our map and stack the layers on each other.
 
@@ -346,7 +346,7 @@ The inner construction of each building block of `tm_elements` is the same.
 
 ---
 
-## Chosing an attribute
+## Chosing an Attribute
 
 .pull-left[
 ```{r life-exp-disp, eval = F}
@@ -368,7 +368,7 @@ tm_shape(corona_cologne) +
 
 ---
 
-## Chosing a color palette
+## Chosing a Color Palette
 
 .pull-left[
 ```{r add-attributes-disp, eval = F}
@@ -400,7 +400,7 @@ tm_shape(corona_cologne) +
 
 ---
 
-## Re-placing the legend
+## Re-Placing the Legend
 
 .pull-left[
 ```{r add-attributes-disp-legend, eval = F}
@@ -436,7 +436,7 @@ tm_shape(corona_cologne) +
 
 ---
 
-## What's left?
+## What's Left?
 
 <br>
 .center[
@@ -447,7 +447,7 @@ knitr::include_graphics(normalizePath("./content/img/enough_maps.jpg"))
 
 ---
 
-## Compasses & Scalebars
+## Compasses & Scale Bars
 
 .pull-left[
 ```{r compass-scalebar-I}
@@ -471,7 +471,7 @@ tm_shape(corona_cologne) +
 
 ---
 
-## Add a background from OpenStreetMap
+## Add a Background From OpenStreetMap
 
 .pull-left[
 ```{r cologne-raster-map-bg, eval = FALSE}
@@ -530,7 +530,7 @@ tmaptools::read_osm(
 
 ---
 
-## Getting interactive (as an alternative to `mapview::mapview()`)!
+## Getting Interactive (as an Alternative To `mapview::mapview()`)!
 
 .pull-left[
 ```{r interactive-map, eval = FALSE}
@@ -554,7 +554,7 @@ tmap_mode("plot")
 
 ---
 
-# Note on Mapping Responsible
+# Note On Mapping Responsible
 
 .pull-left[
 **In the best cases**, maps are easy to understand and an excellent way to transport (scientific) messages.
@@ -589,7 +589,7 @@ colorBlindness::cvdPlot(tmp)
 
 ---
 
-## Color Vision Deficiencies: Virdis Palette
+## Color Vision Deficiencies: `Viridis` Palette
 
 ```{r color-def-virdis, echo = FALSE, out.width="55%"}
 tmp <-
@@ -605,7 +605,7 @@ colorBlindness::cvdPlot(tmp)
 
 ---
 
-## More resources
+## More Resources
 
 <br>
 If you want to dive deeper into mapping with `tmap` check out:

@@ -125,9 +125,9 @@ knitr::include_graphics(normalizePath("./content/img/so-tell-me-5be02d.jpg"))
 <br>
 - The workshop consists of a combination of a few lectures and hands-on exercises
 - Feel free to ask questions at any time
-- Slides and other materials are also available at:
+- Slides and other materials are available at:
 
-.center[`XXX`]
+.center[`https://github.com/StefanJuenger/esra-workshop-first-steps-R-GIS`]
 
 ---
 
@@ -398,7 +398,7 @@ We will use plenty of different packages during the course, but only a few are o
 
 ---
 
-## What You'll See during the Course: Piping In `R`
+## What You'll See During the Course: Piping In `R`
 
 Usually, in `R` we apply functions as follows:
 

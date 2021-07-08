@@ -43,7 +43,7 @@ course_content %>%
 
 ---
 
-## There's so much missing...
+## There's So Much Missing...
 
 <br>
 <br>
@@ -110,7 +110,7 @@ knitr::include_graphics(normalizePath("./content/img/spatial_regression_models.p
 
 ---
 
-## Application(s): forthcoming in *Urban Studies*
+## Application(s): Forthcoming In *Urban Studies*
 
 ```{r pic-green-estimates, echo = FALSE, out.width = "70%"}
 knitr::include_graphics(normalizePath("./content/img/fig_prediction_green_with_income_interaction_unofficial.png"))

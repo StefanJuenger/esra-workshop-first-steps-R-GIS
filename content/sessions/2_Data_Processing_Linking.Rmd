@@ -47,7 +47,7 @@ course_content %>%
 
 ---
 
-## Why care about data types and formats?
+## Why Care About Data Types and Formats?
 
 .pull-left[
 - Different commands to import and handle the data
@@ -71,7 +71,7 @@ knitr::include_graphics(normalizePath("./content/img/fig_geometries.png"))
 
 ---
 
-## More formally, what are...
+## More Formally, What Are...
 
 .pull-left[
 **...Vector Data?**
@@ -93,7 +93,7 @@ knitr::include_graphics(normalizePath("./content/img/fig_geometries.png"))
 
 ---
 
-## Vector data's main characteristic
+## Vector Data's Main Characteristic
 
 <br>
 .pull-left[
@@ -121,7 +121,7 @@ knitr::include_graphics(normalizePath("./content/img/attr_table.png"))
 
 ---
 
-## Raster data's main characteristic
+## Raster Data's Main Characteristic
 
 <br>
 - Information about geometries are globally stored
@@ -166,7 +166,7 @@ knitr::include_graphics(normalizePath("./content/img/table_to_raster.png"))
 
 ---
 
-## Importing data: we only need two commands
+## Importing Data: We Only Need Two Commands
 
 <br>
 .pull-left[
@@ -189,7 +189,7 @@ stars::read_stars()
 
 ---
 
-## Reading vector data in practise: Covid-19 cases in Cologne
+## Reading Vector Data in Practise: COVID-19 Cases in Cologne
 
 ```{r corona-cologne}
 corona_cologne <-
@@ -202,7 +202,7 @@ corona_cologne
 
 ---
 
-## The `geometry` column
+## The `geometry` Column
 
 ```{r geometry-column}
 corona_cologne["geometry"]
@@ -210,7 +210,7 @@ corona_cologne["geometry"]
 
 ---
 
-## Reading vector data in practise: hospitals in Cologne
+## Reading Vector Data in Practise: Hospitals in Cologne
 
 ```{r hospitals-cologne}
 hospitals_cologne <-
@@ -223,7 +223,7 @@ hospitals_cologne
 
 ---
 
-## The `geometry` column
+## The `geometry` Column
 
 ```{r geometry-column-2}
 hospitals_cologne["geometry"]
@@ -231,7 +231,7 @@ hospitals_cologne["geometry"]
 
 ---
 
-## How do I know they are vectors? First check: Plot layers with `plot()`!
+## How Do I Know They Are Vectors? First Check: Plot Layers With `plot()`!
 
 .pull-left[
 ```{r corona-map}
@@ -269,7 +269,7 @@ mapview::mapview(
 
 ---
 
-## ...and the hospitals
+## ...And the Hospitals
 
 .pull-left[
 ```{r hospitals-mapview, eval = FALSE}
@@ -290,7 +290,7 @@ mapview::mapview(
 
 ---
 
-## Creating new variables
+## Creating New Variables
 
 .pull-left[
 ```{r incidence}
@@ -322,7 +322,7 @@ knitr::include_graphics(normalizePath("./content/img/fig_3d_simple.png"))
 
 ---
 
-## Linking hospitals to our Corona data
+## Linking Hospitals to Our Corona Data
 
 How many hospitals are located in each of Cologne's districts? How would we do that? 
 
@@ -346,7 +346,7 @@ hospitals_cologne <-
 
 ---
 
-## Detect containing geometries
+## Detect Containing Geometries
 
 .pull-left[
 ```{r intersections}
@@ -368,7 +368,7 @@ print(containing, n = 23)
 
 ---
 
-## Count containing geometries
+## Counting Containing Geometries
 
 ```{r intersections-count}
 containing_count <- 
@@ -415,7 +415,7 @@ plot(
 
 ---
 
-## There are more geometric confirmation methods
+## There Are More Geometric Confirmation Methods
 
 ```{css echo = FALSE}
 .rotate {
@@ -443,7 +443,7 @@ https://github.com/rstudio/cheatsheets/blob/master/sf.pdf
 
 ---
 
-## Turning to Raster Data: Information about Immigrant Shares
+## Turning to Raster Data: Information About Immigrant Shares
 
 Covid-19 is a disease disproportionaly affecting social groups.
 
@@ -455,7 +455,7 @@ We are going to try to 'corroborate' this finding with German Census 2011 *raste
 
 ---
 
-## Loading Raster Data: Immigrants from the German Census 2011
+## Loading Raster Data: Immigrants From the German Census 2011
 
 ```{r immigrants-cologne}
 immigrants_cologne <-
@@ -467,7 +467,7 @@ immigrants_cologne
 
 ---
 
-## Loading Raster Data: Inhabitants from the German Census 2011
+## Loading Raster Data: Inhabitants From the German Census 2011
 
 ```{r inhabitants-cologne}
 inhabitants_cologne <-
@@ -511,7 +511,7 @@ immigrant_rate
 
 ---
 
-## That's how they look like
+## Result of Combination
 
 .pull-left[
 ```{r combined-raster-plot, eval = FALSE, out.width="75%"}
@@ -591,7 +591,7 @@ plot(corona_cologne[
 
 ---
 
-## What's next, what's missing?
+## What's Next, What's Missing?
 
 .pull-left[
 When working with geospatial data, researcher's degree of freedom is huge
