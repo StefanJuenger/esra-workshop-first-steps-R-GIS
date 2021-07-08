@@ -15,7 +15,18 @@ When social scientists aim to use geospatial data, they must rely on specialized
 
 This course will teach the first steps of exploiting R and applying its geospatial techniques. Participants who are at least on an intermediate-level of expertise in R will learn about the most common data formats, how to get the data, and wrangle them for further analysis. Finally, many researchers' interest is creating maps, which is also straightforward and fun to do in R. The course will therefore end with plotting maps to give participants a visual memento and stimulate future work with geospatial data in R.
 
+## Time Table
 
+|Time            |Title                                 |
+|:---------------|:-------------------------------------|
+|01:00pm-01:20pm |Introduction                          |
+|01:20pm-01:30pm |Exercise 1: R Warm up                 |
+|01:30pm-02:00pm |Data Processing & Spatial Linking     |
+|02:00pm-02:30pm |Exercise 2: Geospatial Data Wrangling |
+|02:30pm-02:45pm |Break                                 |
+|02:45pm-03:15pm |Easy Maps                             |
+|03:15pm-03:45pm |Excercise 3: Build your own map       |
+|03:45pm-04:00pm |Closing, Q & A                        |
 
 ## Slides
 [1 Introduction](https://stefanjuenger.github.io/esra-workshop-first-steps-R-GIS/slides/1_Introduction.html)
